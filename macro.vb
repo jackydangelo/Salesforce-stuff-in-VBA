@@ -4,7 +4,6 @@ Sub main()
 
     ' variable to determine the path
     Dim percorso As String
-    'here i want insert the version of excel
     CreateFile
 
 End Sub
@@ -69,8 +68,7 @@ With fd
 fd.Title = "Seleziona la cartella"
 
 fd.InitialFileName = sName
-
-fd.FilterIndex = 1 'here we can insert a parameter for excel version
+fd.FilterIndex = versionExcel
 
 
 If .Show = -1 Then
@@ -88,3 +86,23 @@ End With
 
 QuoteCommaExport percorso
 End Sub
+
+ Function versionExcel() As Integer
+    ' function for find version of excel used
+    ' with this parameter we can suggest the correct extension (csv)
+    Dim xlApp As New Excel.Application
+
+    Select Case Val(Mid(xlApp.Version, 1, _
+        InStr(1, xlApp.Version, ".") - 1))
+        Case 14 'index of "Excel 2010"
+            versionExcel = 15 'index csv for "Excel 2010"
+        Case 15 'index of "Excel 2013"
+            versionExcel = 1 'index csv for "Excel 2013"
+        Case 16 'index of "Excel 2016"
+            versionExcel = 16 'index csv for "Excel 2016"
+        Case Else
+            versionExcel = 1 'default
+    End Select
+    
+    Set xlApp = Nothing
+End Function
