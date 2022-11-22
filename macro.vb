@@ -4,6 +4,7 @@ Sub main()
 
     ' variable to determine the path
     Dim percorso As String
+    Cells.Select
     CreateFile
 
 End Sub
