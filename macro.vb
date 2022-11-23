@@ -1,10 +1,7 @@
-'Macro generate csv for data import wizard D'angelo 04/05/2020
+'Macro converter csv for data import wizard D'angelo 04/05/2020
 
 Sub main()
 
-    ' variable to determine the path
-    Dim percorso As String
-    Cells.Select
     CreateFile
 
 End Sub
@@ -18,8 +15,9 @@ Sub QuoteCommaExport(percorso)
    Dim FileNum As Integer
    Dim ColumnCount As Integer
    Dim RowCount As Integer
-   
    Dim fsT As Object
+   
+   Cells.Select
    Set fsT = CreateObject("ADODB.Stream")
    fsT.Type = 2 'Specify stream type - we want To save text/string data.
    fsT.Charset = "UTF-8" 'Specify charset For the source text data.
@@ -58,6 +56,7 @@ End Sub
 
 Sub CreateFile()
 ' Sub for the creation of savedialog and generation of csv
+Dim percorso As String
 Dim Cartella As String
 Dim sName As String
 sName = "esempio"
