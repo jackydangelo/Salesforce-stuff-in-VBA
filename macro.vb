@@ -1,15 +1,14 @@
-'Macro converter csv for data import wizard D'angelo 04/05/2020
+'Macro generate csv for data import wizard D'angelo 04/05/2020
 
 Sub main()
-
+    
     CreateFile
-
+    
 End Sub
 
 
-
-
 Sub QuoteCommaExport(percorso)
+
    ' Dimension all variables.
    Dim DestFile As String
    Dim FileNum As Integer
@@ -28,7 +27,6 @@ Sub QuoteCommaExport(percorso)
 
    ' select all cells
    ActiveCell.CurrentRegion.Select
-   
    ' Loop per each row
    For RowCount = 1 To Selection.Rows.Count
 
@@ -48,9 +46,6 @@ Sub QuoteCommaExport(percorso)
       Next ColumnCount
    Next RowCount
    fsT.SaveToFile DestFile, 2 'save file
-
-   MsgBox ("Finito! Il file generato è presente nella cartella selezionata")
-
 End Sub
 
 
@@ -70,7 +65,6 @@ fd.Title = "Seleziona la cartella"
 fd.InitialFileName = sName
 fd.FilterIndex = versionExcel
 
-
 If .Show = -1 Then
 For Each CartellaSelezionata In .SelectedItems
 
@@ -83,10 +77,11 @@ End If
 percorso = fd.SelectedItems(1)
 End With
 
-
 QuoteCommaExport percorso
+MsgBox ("Fatto! Il file generato è presente nella cartella selezionata"            
 End Sub
-
+            
+            
  Function versionExcel() As Integer
     ' function for find version of excel used
     ' with this parameter we can suggest the correct extension (csv)
