@@ -2,7 +2,6 @@
 
 Sub main()
     
-    'Here we can user extra n 1 "MappingValue.vb"
     CreateFile
     
 End Sub
