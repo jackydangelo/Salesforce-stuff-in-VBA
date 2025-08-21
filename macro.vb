@@ -1,103 +1,71 @@
 'Macro generate csv for data import wizard D'angelo 04/05/2020
-
-Sub main()
-    
+'Optimization work 5 years later since first use 21/08/2025
+Sub Main()
     CreateFile
-    
 End Sub
 
+Sub QuoteCommaExport(ws As Worksheet, percorso As String)
+    Dim fsT As Object
+    Dim riga As Long, colonna As Long
+    Dim ultimaRiga As Long, ultimaColonna As Long
+    Dim lineaCSV As String
+    Dim valori() As String
 
-Sub QuoteCommaExport(percorso)
+    Set fsT = CreateObject("ADODB.Stream")
+    With fsT
+        .Type = 2
+        .Charset = "UTF-8"
+        .Open
+    End With
 
-   ' Dimension all variables.
-   Dim DestFile As String
-   Dim FileNum As Integer
-   Dim ColumnCount As Integer
-   Dim RowCount As Integer
-   Dim fsT As Object
-   
-   Cells.Select
-   Set fsT = CreateObject("ADODB.Stream")
-   fsT.Type = 2 'Specify stream type - we want To save text/string data.
-   fsT.Charset = "UTF-8" 'Specify charset For the source text data.
-   fsT.Open 'Open the stream And write binary data To the object
-    
-   ' file destination string recovery
-   DestFile = percorso
+    With ws
+        ultimaRiga = .Cells(.Rows.Count, 1).End(xlUp).Row
+        ultimaColonna = .Cells(1, .Columns.Count).End(xlToLeft).Column
 
-   ' select all cells
-   ActiveCell.CurrentRegion.Select
-   ' Loop per each row
-   For RowCount = 1 To Selection.Rows.Count
+        For riga = 1 To ultimaRiga
+            ReDim valori(1 To ultimaColonna)
+            For colonna = 1 To ultimaColonna
+                valori(colonna) = """" & Replace(.Cells(riga, colonna).Text, """", """""") & """"
+            Next colonna
+            lineaCSV = Join(valori, ",")
+            fsT.WriteText lineaCSV & vbCrLf
+        Next riga
+    End With
 
-      ' Loop per each column
-      For ColumnCount = 1 To Selection.Columns.Count
-      fsT.WriteText """" & Selection.Cells(RowCount, ColumnCount).Text & """"
-        ' Verify if i am in the last column
-         If ColumnCount = Selection.Columns.Count And RowCount <> Selection.Rows.Count And RowCount = 1 Then
-            fsT.WriteText "" & vbCrLf
-        ElseIf ColumnCount = Selection.Columns.Count And RowCount <> Selection.Rows.Count And RowCount <> 1 Then
-             fsT.WriteText "," & vbCrLf
-        ElseIf ColumnCount = Selection.Columns.Count And RowCount = Selection.Rows.Count Then
-            fsT.WriteText ""
-         Else
-            fsT.WriteText ","
-         End If
-      Next ColumnCount
-   Next RowCount
-   fsT.SaveToFile DestFile, 2 'save file
+    fsT.SaveToFile percorso, 2
+    fsT.Close
+    Set fsT = Nothing
 End Sub
-
 
 Sub CreateFile()
-' Sub for the creation of savedialog and generation of csv
-Dim percorso As String
-Dim Cartella As String
-Dim sName As String
-sName = "esempio"
+    Dim percorso As String
+    Dim sName As String: sName = "esempio.csv"
+    Dim fd As FileDialog
+    Dim ws As Worksheet
 
-Dim fd As FileDialog
-Set fd = Application.FileDialog(msoFileDialogSaveAs)
-Dim CartellaSelezionata As Variant
-With fd
-fd.Title = "Seleziona la cartella"
+    Set fd = Application.FileDialog(msoFileDialogSaveAs)
+    Set ws = ActiveSheet
 
-fd.InitialFileName = sName
-fd.FilterIndex = versionExcel
-
-If .Show = -1 Then
-For Each CartellaSelezionata In .SelectedItems
-
-miaCartella = CartellaSelezionata
-
-Next
-Else
-Exit Sub
-End If
-percorso = fd.SelectedItems(1)
-End With
-
-QuoteCommaExport percorso
-MsgBox ("Fatto! Il file generato è presente nella cartella selezionata"            
+    With fd
+        .Title = "Salva il file CSV"
+        .InitialFileName = sName
+        .FilterIndex = GetFilterIndex
+        If .Show = -1 Then
+            percorso = .SelectedItems(1)
+            QuoteCommaExport ws, percorso
+            MsgBox "Esportazione completata! Il file si trova nella cartella selezionata.", vbInformation
+        End If
+    End With
 End Sub
-            
-            
- Function versionExcel() As Integer
-    ' function for find version of excel used
-    ' with this parameter we can suggest the correct extension (csv)
-    Dim xlApp As New Excel.Application
 
-    Select Case Val(Mid(xlApp.Version, 1, _
-        InStr(1, xlApp.Version, ".") - 1))
-        Case 14 'index of "Excel 2010"
-            versionExcel = 15 'index csv for "Excel 2010"
-        Case 15 'index of "Excel 2013"
-            versionExcel = 1 'index csv for "Excel 2013"
-        Case 16 'index of "Excel 2016"
-            versionExcel = 16 'index csv for "Excel 2016"
-        Case Else
-            versionExcel = 1 'default
+Function GetFilterIndex() As Integer
+    Dim versione As Integer
+    versione = Val(Split(Application.Version, ".")(0))
+
+    Select Case versione
+        Case 14: GetFilterIndex = 15 ' Excel 2010
+        Case 15: GetFilterIndex = 1  ' Excel 2013
+        Case 16: GetFilterIndex = 16 ' Excel 2016
+        Case Else: GetFilterIndex = 1
     End Select
-    
-    Set xlApp = Nothing
 End Function
