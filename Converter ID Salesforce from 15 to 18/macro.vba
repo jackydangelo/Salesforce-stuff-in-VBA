@@ -14,7 +14,7 @@ Sub ConvertSalesforceIDsAuto()
     Set ws = ActiveSheet
     lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
     
-    For i = 2 To lastRow
+    For i = 2 To lastRow ' non considera intestazione
         id15 = Trim(ws.Cells(i, 1).Value)
         id18 = ConvertSalesforceID(id15)
         ws.Cells(i, 2).Value = id18
@@ -41,6 +41,7 @@ Function ConvertSalesforceID(id15 As String) As String
         block = Mid(id15, i * 5 + 1, 5)
         bitString = ""
         
+        ' Costruzione corretta della stringa binaria
         For j = 1 To 5
             If Mid(block, j, 1) Like "[A-Z]" Then
                 bitString = bitString & "1"
@@ -61,4 +62,3 @@ Function ConvertSalesforceID(id15 As String) As String
     
     ConvertSalesforceID = id15 & suffix
 End Function
-
